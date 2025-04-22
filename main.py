@@ -13,20 +13,26 @@ def detect_encoding(binary_data):
 
 @app.get("/", response_class=HTMLResponse)
 async def read_form(request: Request):
-    return templates.TemplateResponse("form.html", {"request": request, "result": None, "error": None})
+    return templates.TemplateResponse("form.html", {"request": request, "result": None, "error": None, "base64_data": ""})
 
 @app.post("/", response_class=HTMLResponse)
-async def process_form(request: Request, base64_data: str = Form(...), encoding: str = Form("auto")):
+async def handle_form(request: Request, base64_data: str = Form(...), encoding: str = Form('auto')):
     try:
         buffer_data = base64.b64decode(base64_data)
-    except Exception as e:
-        return templates.TemplateResponse("form.html", {"request": request, "result": None, "error": f"Invalid base64 data: {str(e)}"})
-
-    detected_encoding = detect_encoding(buffer_data) if encoding == 'auto' else encoding
-
-    try:
+        detected_encoding = detect_encoding(buffer_data) if encoding == 'auto' else encoding
         text_content = buffer_data.decode(detected_encoding)
+        return templates.TemplateResponse("form.html", {
+            "request": request,
+            "result": text_content,
+            "error": None,
+            "base64_data": base64_data,
+            "encoding": detected_encoding
+        })
     except Exception as e:
-        return templates.TemplateResponse("form.html", {"request": request, "result": None, "error": f"Decoding error: {str(e)}"})
-
-    return templates.TemplateResponse("form.html", {"request": request, "result": text_content, "error": None})
+        return templates.TemplateResponse("form.html", {
+            "request": request,
+            "result": None,
+            "error": str(e),
+            "base64_data": base64_data,
+            "encoding": encoding
+        })
