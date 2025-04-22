@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buffer to Text Converter</title>
+</head>
+<body>
+    <h1>Buffer to Text Converter</h1>
+    {% if error %}
+        <p style="color:red;">Error: {{ error }}</p>
+    {% endif %}
+    <form method="post">
+        <label for="base64_data">Base64 Encoded Data:</label><br>
+        <textarea name="base64_data" rows="10" cols="50">{{ request.form.get('base64_data') or '' }}</textarea><br><br>
+        <label for="encoding">Select Encoding:</label>
+        <select name="encoding">
+            <option value="auto">Auto</option>
+            <option value="utf-8">UTF-8</option>
+            <option value="ascii">ASCII</option>
+            <option value="latin-1">Latin-1</option>
+            <option value="utf-16">UTF-16</option>
+            <option value="utf-32">UTF-32</option>
+        </select><br><br>
+        <input type="submit" value="Convert">
+    </form>
+    {% if result %}
+        <h2>Converted Text:</h2>
+        <textarea rows="10" cols="50">{{ result }}</textarea>
+    {% endif %}
+</body>
+</html>
