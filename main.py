@@ -13,7 +13,7 @@ def detect_encoding(binary_data):
 
 @app.get("/", response_class=HTMLResponse)
 async def read_form(request: Request):
-    return templates.TemplateResponse("form.html", {"request": request, "result": None, "error": None, "base64_data": ""})
+    return templates.TemplateResponse("form.html", {"request": request, "result": None, "error": None})
 
 @app.post("/", response_class=HTMLResponse)
 async def handle_form(request: Request, base64_data: str = Form(...), encoding: str = Form('auto')):
@@ -24,15 +24,13 @@ async def handle_form(request: Request, base64_data: str = Form(...), encoding: 
         return templates.TemplateResponse("form.html", {
             "request": request,
             "result": text_content,
-            "error": None,
-            "base64_data": base64_data,
-            "encoding": detected_encoding
+            "encoding": detected_encoding,
+            "error": None
         })
     except Exception as e:
         return templates.TemplateResponse("form.html", {
             "request": request,
             "result": None,
-            "error": str(e),
-            "base64_data": base64_data,
-            "encoding": encoding
+            "encoding": None,
+            "error": str(e)
         })
